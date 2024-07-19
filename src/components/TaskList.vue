@@ -138,7 +138,11 @@ function createStatus() {
       <Task v-for="task in tasks" :task="task" @delete="(n) => tasks.filter((item) => !item.id != n)"></Task>
       <v-row class="create">
         <v-col>
-          <v-sheet @click="isActive = true" class="pa-2 sheet">new task</v-sheet>
+          <v-sheet @click="isActive = true" class="pa-2 sheet" >
+            <v-icon icon="mdi-plus" color="primary" ></v-icon>
+          
+            new task
+          </v-sheet>
         </v-col>
       </v-row>
     </v-container>
@@ -183,7 +187,12 @@ function createStatus() {
 
 .create:hover .sheet {
   cursor: pointer;
-  background-color: antiquewhite;
+  background-color: rgb(212, 212, 212);
+}
+
+.sheet {
+  border: 1px solid grey;
+  border-radius: 5px;
 }
 
 .task_edit {

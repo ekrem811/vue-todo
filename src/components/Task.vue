@@ -125,6 +125,10 @@ function updateTask() {
     cursor: pointer;
     background-color: antiquewhite;
 }
+.task:hover{
+
+  border-radius: 5px;
+}
 
 .container {
     width: 100%;
