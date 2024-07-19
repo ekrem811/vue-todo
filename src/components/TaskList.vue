@@ -12,26 +12,26 @@ const isActive = ref(false)
 onMounted(() => {
 
   const router = useRouter()
-  if (!authToken) router.push('login') 
+  if (!authToken) router.push('login')
 
   let URL = "http://localhost:8080/api/tasks"
   axios.get(URL, {
     headers: { "Authorization": "Bearer " + authToken }
   }).then((response) => {
     tasks.value = response.data
-  }).catch((error)=>{
+  }).catch((error) => {
     if (error.response.status == 401) router.push('login')
     if (error.response.status == 403) router.push('login')
   })
 })
 function loadStatuses(statuses) {
-  
+
   URL = "http://localhost:8080/api/statuses"
   axios.get(URL,
-    { headers: {"Authorization": "Bearer " + authToken } }
+    { headers: { "Authorization": "Bearer " + authToken } }
   ).then((response) => {
     statuses.value = response.data
-  }).catch((error)=>{
+  }).catch((error) => {
     if (error.response.status == 401) router.push('login')
     if (error.response.status == 403) router.push('login')
   })
@@ -39,38 +39,43 @@ function loadStatuses(statuses) {
 function loadUsers(users) {
   URL = "http://localhost:8080/api/users"
   axios.get(URL,
-    { headers: {"Authorization": "Bearer " + authToken } }
+    { headers: { "Authorization": "Bearer " + authToken } }
   ).then((response) => {
     console.log(response.data)
     users.value = response.data
     console.log(users)
-  }).catch((error)=>{
+  }).catch((error) => {
     if (error.response.status == 401) router.push('login')
     if (error.response.status == 403) router.push('login')
   })
 }
-watch(isActive,()=>{
-  if (isActive.value){
-    loadStatuses(statuses);
-    loadUsers(users)
-  } 
-})
 const taskName = ref()
 const statusId = ref()
 const assigneeId = ref()
+watch(isActive, () => {
+  if (isActive.value) {
+    loadStatuses(statuses);
+    loadUsers(users)
+  } else {
+
+    assigneeId.value = null
+    statusId.value = null
+    taskName.value = null
+  }
+})
 function createTask() {
   URL = "http://localhost:8080/api/task"
   axios.post(URL, {
-    name:taskName.value,
+    name: taskName.value,
     statusId: statusId.value,
-    assigneeId:assigneeId.value
+    assigneeId: assigneeId.value
   }, {
     headers: {
       Authorization: "Bearer " + authToken
     }
-  }).then((response)=>{
+  }).then((response) => {
     tasks.value.push(response.data)
-  }).catch((error)=>{
+  }).catch((error) => {
   })
 
   isActive.value = false
@@ -98,28 +103,30 @@ function createTask() {
         <v-sheet class="pa-2">Assignee</v-sheet>
       </v-col>
     </v-row>
-    <Task v-for="task in tasks" :task="task"></Task>
+    <Task v-for="task in tasks" :task="task" @delete="(n) => tasks.filter((item) => !item.id != n)"></Task>
     <v-row class="create">
       <v-col>
-            <v-sheet @click="isActive = true" class="pa-2 sheet">new task</v-sheet>
+        <v-sheet @click="isActive = true" class="pa-2 sheet">new task</v-sheet>
       </v-col>
     </v-row>
   </v-container>
- <v-overlay v-model="isActive" class="align-center justify-center">
-        <v-card title="New Task" class="task_edit pa-20">
-         <v-card-text>
-                <v-text-field v-model="taskName" label="Task Name" variant="outlined" ></v-text-field>
-                <v-select v-model="statusId" label="Status" :items="statuses" item-title="name" item-value="id" variant="outlined"></v-select>
-                <v-select v-model="assigneeId" label="Assignee" :items="users" item-title="username" item-value="id" variant="outlined"></v-select>
-              </v-card-text>
+  <v-overlay v-model="isActive" class="align-center justify-center">
+    <v-card title="New Task" class="task_edit pa-20">
+      <v-card-text>
+        <v-text-field v-model="taskName" label="Task Name" variant="outlined"></v-text-field>
+        <v-select clearable v-model="statusId" label="Status" :items="statuses" item-title="name" item-value="id"
+          variant="outlined"></v-select>
+        <v-select clearable v-model="assigneeId" label="Assignee" :items="users" item-title="username" item-value="id"
+          variant="outlined"></v-select>
+      </v-card-text>
 
-              <v-card-actions>
-                <v-btn text="Close" @click="isActive = false"></v-btn>
-                <v-spacer></v-spacer>
-                <v-btn text="Create" @click="createTask()"></v-btn>
-              </v-card-actions>
-        </v-card>
-    </v-overlay>
+      <v-card-actions>
+        <v-btn text="Close" @click="isActive = false"></v-btn>
+        <v-spacer></v-spacer>
+        <v-btn text="Create" @click="createTask()"></v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-overlay>
 
 </template>
 <style scoped>
@@ -133,7 +140,8 @@ function createTask() {
   cursor: pointer;
   background-color: antiquewhite;
 }
+
 .task_edit {
-    width:500px;
+  width: 500px;
 }
 </style>

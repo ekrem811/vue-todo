@@ -7,19 +7,17 @@ const overlay = ref(false);
 const statuses = ref([]);
 const authToken = localStorage.getItem("token")
 const users = ref([]);
-
+const emit = defineEmits(['delete'])
 function deepCopy(task) {
     return {
-        id: task.id,
         name: task.name,
-        status: task.status ? { id: task.status.id, name: task.status.name } : null,
-        assignee: task.assignee ? { id: task.assignee.id, username: task.assignee.username } : null,
-        reporter: {username: task.reporter.username, id: task.reporter.id}
+        statusId: task.status ? task.status.id : null,
+        assigneeId: task.assignee ? task.assignee.id : null,
     }
 }
 
 const taskCopy = ref()
-watch(reactiveTask, ()=>{
+watch(reactiveTask, () => {
     taskCopy.value = deepCopy(reactiveTask.value)
 })
 watch(overlay, () => {
@@ -57,17 +55,26 @@ function loadStatuses(statuses) {
 
 const editError = ref(false)
 function deleteTask() {
-    overlay.value = !overlay.value
-}
-function updateTask() {
-    URL = "http://localhost:8080/api/task" + "/"+ taskCopy.value.id
-    axios.put(URL, taskCopy.value, { headers: { Authorization: "Bearer " + authToken } }).then((response)=>{
-        console.log("updated")
-        console.log(response.data)
+    URL = "http://localhost:8080/api/task" + "/" + reactiveTask.value.id
+    axios.delete(URL, { headers: { Authorization: "Bearer " + authToken } }).then((response) => {
         reactiveTask.value = response.data
         overlay.value = !overlay.value
-    }).catch((error)=>{
-        editError.value = "Update failed."
+        emit("delete")
+    }).catch((error) => {
+        editError.value = error.response.data
+    })
+}
+function updateTask() {
+    URL = "http://localhost:8080/api/task" + "/" + reactiveTask.value.id
+    axios.put(URL, {
+        name: taskCopy.value.name,
+        statusId: taskCopy.value.statusId,
+        assigneeId: taskCopy.value.assigneeId
+    }, { headers: { Authorization: "Bearer " + authToken } }).then((response) => {
+        reactiveTask.value = response.data
+        overlay.value = !overlay.value
+    }).catch((error) => {
+        editError.value = error.response.data
     })
 }
 </script>
@@ -90,9 +97,9 @@ function updateTask() {
         <v-card title="Edit Task" class="task_edit pa-20">
             <v-card-text>
                 <v-text-field v-model="taskCopy.name" label="Task Name" variant="outlined"></v-text-field>
-                <v-select clearable v-model="taskCopy.status" label="Status" :items="statuses" item-title="name"
+                <v-select clearable v-model="taskCopy.statusId" label="Status" :items="statuses" item-title="name"
                     item-value="id" variant="outlined"></v-select>
-                <v-select clearable v-model="taskCopy.assignee" label="Assignee" :items="users" item-title="username"
+                <v-select clearable v-model="taskCopy.assigneeId" label="Assignee" :items="users" item-title="username"
                     item-value="id" variant="outlined"></v-select>
             </v-card-text>
 
