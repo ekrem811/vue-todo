@@ -88,7 +88,7 @@ function logOut() {
 }
 const statusName = ref()
 function createStatus() {
-    URL = "http://localhost:8080/api/status"
+  URL = "http://localhost:8080/api/status"
   axios.post(URL, {
     name: statusName.value
   }, {
@@ -108,7 +108,7 @@ function createStatus() {
   <v-layout class="rounded rounded-md">
     <v-app-bar title="To Do" class="px-10">
       <v-spacer></v-spacer>
-      <v-btn @click="logOut()" color="error" >Log Out</v-btn>
+      <v-btn @click="logOut()" color="error">Log Out</v-btn>
     </v-app-bar>
 
     <!-- <v-navigation-drawer>
@@ -125,8 +125,7 @@ function createStatus() {
         <v-col>
           <v-sheet class="pa-2 col-title">
             Status
-
-            <v-icon icon="mdi-plus" color="primary" @click="isAddStatusActive=true"></v-icon>
+            <v-icon icon="mdi-plus" color="primary" @click="isAddStatusActive = true"></v-icon>
           </v-sheet>
         </v-col>
         <v-col>
