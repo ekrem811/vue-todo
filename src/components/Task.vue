@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, defineProps, registerRuntimeCompiler } from 'vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
 const props = defineProps(['task'])
 const reactiveTask = ref(props.task)
 const overlay = ref(false);
@@ -8,6 +9,7 @@ const statuses = ref([]);
 const authToken = localStorage.getItem("token")
 const users = ref([]);
 const emit = defineEmits(['delete'])
+const router = useRouter()
 function deepCopy(task) {
     return {
         name: task.name,
