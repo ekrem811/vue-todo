@@ -140,7 +140,7 @@ function searchFilter() {
           </v-btn>
         </v-col>
       </v-row>
-      <v-row no-gutters>
+      <v-row no-gutters class="border-b">
         <v-col cols="6">
           <v-sheet class="pa-2 col-title">Name</v-sheet>
         </v-col>
@@ -160,7 +160,7 @@ function searchFilter() {
       <Task v-for="task in tasks" :key="task.id" :task="task" @delete="(n) => tasks.filter((item) => item.id == n)"></Task>
       <v-row class="create">
         <v-col>
-          <v-sheet @click="isActive = true" class="pa-2 sheet">
+          <v-sheet @click="isActive = true" class="pa-2 sheet border-thin rounded-lg">
             <v-icon icon="mdi-plus" color="primary"></v-icon>
 
             new task
@@ -212,10 +212,6 @@ function searchFilter() {
   background-color: rgb(212, 212, 212);
 }
 
-.sheet {
-  border: 1px solid grey;
-  border-radius: 5px;
-}
 
 .task_edit {
   width: 500px;
