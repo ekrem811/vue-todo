@@ -14,8 +14,14 @@ const router = useRouter()
 onMounted(() => {
 
   if (!authToken) router.push('login')
+  loadTasks(tasks)
 
+})
+function loadTasks(tasks, searchParam) {
   let URL = "http://localhost:8080/api/tasks"
+  if (searchParam != undefined && searchParam != '')
+    URL = URL + "?search="  + searchParam
+
   axios.get(URL, {
     headers: { "Authorization": "Bearer " + authToken }
   }).then((response) => {
@@ -24,7 +30,7 @@ onMounted(() => {
     if (error.response.status == 401) router.push('login')
     if (error.response.status == 403) router.push('login')
   })
-})
+}
 function loadStatuses(statuses) {
 
   URL = "http://localhost:8080/api/statuses"
@@ -103,6 +109,12 @@ function createStatus() {
 }
 
 
+const search = ref()
+function searchFilter() {
+ loadTasks(tasks, search.value)
+}
+
+
 </script>
 <template>
   <v-layout class="rounded rounded-md">
@@ -118,6 +130,16 @@ function createStatus() {
     </v-navigation-drawer> -->
 
     <v-container class="container">
+      <v-row>
+        <v-col>
+          <v-text-field clearable v-model="search" variant="outlined" density="compact" label="Search" @click:clear="searchFilter()"></v-text-field>
+        </v-col>
+        <v-col>
+          <v-btn variant="outlined" @click="searchFilter()" >
+            search
+          </v-btn>
+        </v-col>
+      </v-row>
       <v-row no-gutters>
         <v-col cols="6">
           <v-sheet class="pa-2 col-title">Name</v-sheet>
@@ -135,12 +157,12 @@ function createStatus() {
           <v-sheet class="pa-2 col-title">Assignee</v-sheet>
         </v-col>
       </v-row>
-      <Task v-for="task in tasks" :task="task" @delete="(n) => tasks.filter((item) => !item.id != n)"></Task>
+      <Task v-for="task in tasks" :key="task.id" :task="task" @delete="(n) => tasks.filter((item) => item.id == n)"></Task>
       <v-row class="create">
         <v-col>
-          <v-sheet @click="isActive = true" class="pa-2 sheet" >
-            <v-icon icon="mdi-plus" color="primary" ></v-icon>
-          
+          <v-sheet @click="isActive = true" class="pa-2 sheet">
+            <v-icon icon="mdi-plus" color="primary"></v-icon>
+
             new task
           </v-sheet>
         </v-col>
